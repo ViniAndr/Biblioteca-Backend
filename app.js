@@ -9,6 +9,7 @@ import adminRoutes from "./src/routers/adminRoutes.js";
 import author from "./src/routers/authorRoutes.js";
 import category from "./src/routers/categoryRoutes.js";
 import publisher from "./src/routers/publisherRoutes.js";
+import bookRoutes from "./src/routers/bookRoutes.js";
 
 class App {
   constructor() {
@@ -29,6 +30,7 @@ class App {
     this.app.use("/author", author);
     this.app.use("/category", category);
     this.app.use("/publisher", publisher);
+    this.app.use("/book", bookRoutes);
   }
 }
 

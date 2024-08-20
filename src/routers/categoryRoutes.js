@@ -11,15 +11,15 @@ import authRequired from "../middlewares/authRequired.js";
 import controllerAccess from "../middlewares/controllerAccess.js";
 
 // Criar um novo categoria (Funcionario)
-router.post("/create", authRequired, controllerAccess("funcionario"), category.create);
+router.post("/create", authRequired, controllerAccess(), category.create);
 
 // Obter todos os categoriaes (Funcionario)
-router.get("/all", authRequired, controllerAccess("funcionario"), category.getAll);
+router.get("/all", authRequired, controllerAccess(), category.getAll);
 
 // Atualizar um categoria por ID (Funcionario)
-router.put("/update/:id", authRequired, controllerAccess("funcionario"), category.update);
+router.put("/update/:id", authRequired, controllerAccess(), category.update);
 
 // Deletar uma cátegoria (Funcionario)
-router.delete("/delete/:id", authRequired, controllerAccess("funcionario"), category.delete);
+router.delete("/delete/:id", authRequired, controllerAccess(), category.delete);
 
 export default router;

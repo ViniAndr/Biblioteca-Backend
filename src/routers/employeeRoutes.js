@@ -16,7 +16,7 @@ router.get("/login", employeeController.login);
 router.put("/update", authRequired, employeeController.update);
 
 // Obter perfil do funcionario (Funcionario)
-router.get("/show", authRequired, controllerAccess("funcionario"), employeeController.getShowEmployee);
+router.get("/show", authRequired, controllerAccess(), employeeController.getShowEmployee);
 
 // Obter todos os funcionarios (Admin)
 router.get("/all", authRequired, controllerAccess("admin"), employeeController.getAllEmployee);
