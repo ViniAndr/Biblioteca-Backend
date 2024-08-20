@@ -17,7 +17,7 @@ export default async (req, res, next) => {
 
     return next();
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
     return res.status(401).json("Authorization required");
   }
 };

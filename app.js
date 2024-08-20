@@ -6,6 +6,9 @@ dotenv.config();
 import clientRoutes from "./src/routers/clientRoutes.js";
 import employeeRoutes from "./src/routers/employeeRoutes.js";
 import adminRoutes from "./src/routers/adminRoutes.js";
+import author from "./src/routers/authorRoutes.js";
+import category from "./src/routers/categoryRoutes.js";
+import publisher from "./src/routers/publisherRoutes.js";
 
 class App {
   constructor() {
@@ -20,9 +23,12 @@ class App {
   }
 
   routes() {
-    this.app.use("/cliente", clientRoutes);
-    this.app.use("/funcionario", employeeRoutes);
+    this.app.use("/client", clientRoutes);
+    this.app.use("/employee", employeeRoutes);
     this.app.use("/admin", adminRoutes);
+    this.app.use("/author", author);
+    this.app.use("/category", category);
+    this.app.use("/publisher", publisher);
   }
 }
 

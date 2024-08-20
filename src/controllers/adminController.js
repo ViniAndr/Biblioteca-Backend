@@ -27,8 +27,6 @@ export const update = async (req, res) => {
   const id = req.userId;
   const { email, senha } = req.body;
 
-  console.log(id, email, senha);
-
   try {
     const hash = await hashPassword(senha);
 

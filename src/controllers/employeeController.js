@@ -5,7 +5,6 @@ import generateToken from "../utils/generateToken.js";
 import { authenticateUser, createUser } from "../services/userService.js";
 
 export const create = async (req, res) => {
-  console.log(req.body);
   try {
     const user = await createUser(req.body, "funcionario");
     if (!user) return res.status(400).json({ error: "User already exists!" });
@@ -77,7 +76,6 @@ export const getAllEmployee = async (req, res) => {
 
 export const getEmployeeById = async (req, res) => {
   const id = parseInt(req.params.id);
-  console.log(req.userRole);
   try {
     const employee = await prisma.funcionario.findUnique({ where: { id } });
     if (!employee) return res.status(400).json({ error: "employee not found!" });
