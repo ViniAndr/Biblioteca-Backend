@@ -16,19 +16,19 @@ model Admin {
 }
 
 model Cliente {
-  id        Int    @id @default(autoincrement())
-  nome      String
-  sobrenome String
-  email     String @unique
-  senha     String
-  telefone  String
-  logradouro String
-  numero    String
-  bairro    String 
-  cidade    String
-  estado    String
-  cep       String
-  role      String
+  id          Int       @id @default(autoincrement())
+  nome        String
+  sobrenome   String
+  email       String?   @unique
+  senha       String?
+  telefone    String
+  logradouro  String
+  numero      String
+  bairro      String 
+  cidade      String
+  estado      String
+  cep         String
+  role        String  @default("cliente")
 
   //relacionamento com Emprestimo
   emprestimos Emprestimo[]
@@ -40,7 +40,7 @@ model Funcionario {
   sobrenome   String
   email       String    @unique
   senha       String
-  role        String       @default("funcionario")
+  role        String    @default("funcionario")
 
   // Relacionamento com Emprestimo
   emprestimos Emprestimo[]
@@ -51,16 +51,16 @@ model Livro {
   titulo        String
   ISBN          String   @unique
   qtdCopias     Int      @default(1)
-  qtdDisponivel Int
-  edicao        Int
+  qtdDisponivel Int      @default(1)
+  edicao        Int?
 
   // Relacionamento com Autor
   autorId       Int
-  autor         Autor    @relation(fields: [autorId], references: [id])
+  autor         Autor     @relation(fields: [autorId], references: [id])
 
   // Relacionamento com Editora
   editoraId     Int
-  editora       Editora  @relation(fields: [editoraId], references: [id])
+  editora       Editora   @relation(fields: [editoraId], references: [id])
 
   // Relacionamento com Categoria
   categoriaId   Int

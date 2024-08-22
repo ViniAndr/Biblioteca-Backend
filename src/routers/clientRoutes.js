@@ -6,8 +6,11 @@ import * as clientController from "../controllers/clientController.js";
 import authRequired from "../middlewares/authRequired.js";
 import controllerAccess from "../middlewares/controllerAccess.js";
 
-// Criar um novo cliente (Cliente)
+// Criar um novo cliente online com o cadastro completo (Cliente)
 router.post("/create", clientController.create);
+
+// Criar um novo cliente Com o cadastro simples (Funcionário)
+router.post("/create/simple", clientController.createSimple);
 
 // Login do cliente (Cliente)
 router.get("/login", clientController.login);

@@ -20,6 +20,22 @@ export const create = async (req, res) => {
   }
 };
 
+export const createSimple = async (req, res) => {
+  const { telefone } = req.body;
+
+  try {
+    const user = await prisma.cliente.findUnique({ where: { telefone } });
+    if (!user) return res.status(400).json({ error: "User already exists!" });
+
+    await prisma.cliente.create({ data: req.body });
+
+    return res.status(201).json({ message: "Employee created successfully!" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Something went wrong, please try again later." });
+  }
+};
+
 export const login = async (req, res) => {
   const { email, senha } = req.body;
 
