@@ -21,7 +21,7 @@ model Cliente {
   sobrenome   String
   email       String?   @unique
   senha       String?
-  telefone    String
+  telefone    String    @unique
   logradouro  String
   numero      String
   bairro      String 

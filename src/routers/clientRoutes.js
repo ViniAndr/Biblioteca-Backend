@@ -6,28 +6,31 @@ import * as clientController from "../controllers/clientController.js";
 import authRequired from "../middlewares/authRequired.js";
 import controllerAccess from "../middlewares/controllerAccess.js";
 
-// Criar um novo cliente online com o cadastro completo (Cliente)
-router.post("/create", clientController.create);
+// Verificar se o cliente já existe e atualizar
+router.post("/verify", clientController.verifyOrCreateClient);
 
-// Criar um novo cliente Com o cadastro simples (Funcionário)
-router.post("/create/simple", clientController.createSimple);
+// Criar um novo cliente online com o cadastro completo
+router.post("/create", clientController.createFullClient);
 
-// Login do cliente (Cliente)
-router.get("/login", clientController.login);
+// Criar um novo cliente com o cadastro simples
+router.post("/create/simple", clientController.createSimpleClient);
 
-// Atualizar endereço do cliente (Cliente)
-router.put("/update/address", authRequired, clientController.updateAddress);
+// Login do cliente
+router.post("/login", clientController.clientLogin);
 
-// Atualizar dados do registro do cliente (Cliente)
-router.put("/update/registration", authRequired, clientController.updateRegistration);
+// Atualizar endereço do cliente
+router.put("/update/address", authRequired, clientController.updateClientAddress);
 
-// Deletar cliente (Cliente)
-router.delete("/delete", authRequired, clientController.deleteClient);
+// Atualizar dados do registro do cliente
+router.put("/update/profile", authRequired, clientController.updateClientProfile);
 
-// Ver todos os clientes (Funcionário e Admin)
-router.get("/all", authRequired, controllerAccess(), clientController.getAllClients);
+// Deletar cliente
+router.delete("/delete", authRequired, clientController.deleteClientAccount);
 
-// Ver cliente por ID (Funcionário e Admin)
+// Ver todos os clientes
+router.get("/all", authRequired, controllerAccess(), clientController.listAllClients);
+
+// Ver cliente por ID
 router.get("/:id", authRequired, controllerAccess(), clientController.getClientById);
 
 export default router;

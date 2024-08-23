@@ -4,6 +4,7 @@ import hashPassword from "../utils/hashPassword.js";
 
 const prisma = new PrismaClient();
 
+// CRIAR USUÁRIO (CLEINTE E FUNCIONÁRIO)
 const createUser = async (data, role) => {
   const { email, senha } = data;
 
@@ -21,6 +22,7 @@ const createUser = async (data, role) => {
   return newUser;
 };
 
+// LOGIN
 const authenticateUser = async (email, senha, role) => {
   // Verificar o usuário no banco de dados
   const user = await prisma[role].findUnique({ where: { email } });
@@ -34,4 +36,25 @@ const authenticateUser = async (email, senha, role) => {
   return user;
 };
 
-export { authenticateUser, createUser };
+// VERIFICA SE UM CLIENTE JA EXISTE E ATUALIZA PARA USO NO SITE
+const verifyAndUpdateClient = async (data) => {
+  const { email, senha, telefone } = data;
+
+  const existingClient = await prisma.cliente.findUnique({ where: { telefone } });
+
+  // Se o telefone já estiver cadastrado, atualiza o cliente com o email e a senha
+  if (existingClient) {
+    const hashedPassword = await hashPassword(senha);
+
+    const updatedClient = await prisma.cliente.update({
+      where: { telefone },
+      data: { email, senha: hashedPassword },
+    });
+
+    return updatedClient;
+  }
+
+  return null;
+};
+
+export { authenticateUser, createUser, verifyAndUpdateClient };
