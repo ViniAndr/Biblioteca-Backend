@@ -50,7 +50,7 @@ export const confirmLoanPickup = async (req, res) => {
 
 // os filtro de status e id são opcionais e vem do body
 export const getLoans = async (req, res) => {
-  const { status, clientId } = req.body;
+  const { status, clientId } = req.query;
 
   try {
     const loans = await getLoansEmployee(status, clientId);
@@ -64,7 +64,7 @@ export const getLoans = async (req, res) => {
 // o filtro de status e opcionais e vem do body
 export const getClientLoans = async (req, res) => {
   const clientId = req.userId;
-  const { status } = req.body;
+  const { status } = req.query;
 
   try {
     const loans = await getLoansClient(clientId, status);

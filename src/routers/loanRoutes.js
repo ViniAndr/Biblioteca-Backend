@@ -8,7 +8,7 @@ import authRequired from "../middlewares/authRequired.js";
 import controllerAccess from "../middlewares/controllerAccess.js";
 
 // Criar um novo empréstimo (cliente e funcionário)
-router.post("/", authRequired, loanController.createLoan);
+router.post("/create", authRequired, loanController.createLoan);
 
 // Confirmar retirada do livro (funcionário)
 router.put("/:id/confirm", authRequired, controllerAccess(), loanController.confirmLoanPickup);

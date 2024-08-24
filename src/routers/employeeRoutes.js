@@ -7,22 +7,22 @@ import authRequired from "../middlewares/authRequired.js";
 import controllerAccess from "../middlewares/controllerAccess.js";
 
 // Criar um novo funcionario (Admin)
-router.post("/create", authRequired, controllerAccess("admin"), employeeController.create);
+router.post("/create", authRequired, controllerAccess("admin"), employeeController.createEmployee);
 
 // Login do funcionario (Funcionario)
-router.get("/login", employeeController.login);
+router.get("/login", employeeController.loginEmployee);
 
 // Atualizar dados de registro do funcionario (Funcionario)
-router.put("/update", authRequired, employeeController.update);
+router.put("/update", authRequired, employeeController.updateEmployee);
 
 // Obter perfil do funcionario (Funcionario)
-router.get("/show", authRequired, controllerAccess(), employeeController.getShowEmployee);
+router.get("/profile", authRequired, controllerAccess(), employeeController.getEmployeeDetails);
 
 // Obter todos os funcionarios (Admin)
-router.get("/all", authRequired, controllerAccess("admin"), employeeController.getAllEmployee);
+router.get("/all", authRequired, controllerAccess("admin"), employeeController.getAllEmployees);
 
 // Obter um funcionario por ID (Admin)
-router.get("/show/:id", authRequired, controllerAccess("admin"), employeeController.getEmployeeById);
+router.get("/:id", authRequired, controllerAccess("admin"), employeeController.getEmployeeById);
 
 // Deletar um funcionario por ID (Admin)
 router.delete("/delete/:id", authRequired, controllerAccess("admin"), employeeController.deleteEmployee);

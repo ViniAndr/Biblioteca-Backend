@@ -13,8 +13,8 @@ import controllerAccess from "../middlewares/controllerAccess.js";
 // Criar um novo categoria (Funcionario)
 router.post("/create", authRequired, controllerAccess(), author.create);
 
-// Obter todos os categoriaes (Funcionario)
-router.get("/all", authRequired, controllerAccess(), author.getAll);
+// Obter todos os categoriaes
+router.get("/all", author.getAll);
 
 // Atualizar um categoria por ID (Funcionario)
 router.put("/update/:id", authRequired, controllerAccess(), author.update);

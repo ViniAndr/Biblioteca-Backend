@@ -6,17 +6,17 @@ export const createBook = async (req, res) => {
 
   try {
     await prisma.livro.create({ data });
-    return res.status(201).json({ message: "Created" });
+    return res.status(201).json({ message: "Book created successfully" });
   } catch (error) {
     console.error(error.message);
-    return res.status(500).json({ message: "something went wrong, please try again later." });
+    return res.status(500).json({ message: "Something went wrong, please try again later." });
   }
 };
 
 export const getAllBooks = async (req, res) => {
-  const { page = 1, limit = 10, author, category, publisher } = req.query;
+  const limit = 10;
+  const { page = 1, author, category, publisher } = req.query;
 
-  // Filtros Dinâmicos
   const where = {};
   if (author) where.autorId = Number(author);
   if (category) where.categoriaId = Number(category);
@@ -29,7 +29,6 @@ export const getAllBooks = async (req, res) => {
       skip: (Number(page) - 1) * Number(limit),
     });
 
-    // serve para contar quantos livros existem no banco de dados
     const count = await prisma.livro.count({ where });
 
     return res.status(200).json({
@@ -39,43 +38,45 @@ export const getAllBooks = async (req, res) => {
     });
   } catch (error) {
     console.error(error.message);
-    return res.status(500).json({ message: "something went wrong, please try again later." });
+    return res.status(500).json({ message: "Something went wrong, please try again later." });
   }
 };
 
-export const getShowBook = async (req, res) => {
-  const id = parseInt(req.params.id);
+export const getBookById = async (req, res) => {
+  const { id } = req.params;
 
   try {
-    const book = await prisma.livro.findUnique({ where: { id } });
+    const book = await prisma.livro.findUnique({ where: { id: Number(id) } });
+    if (!book) return res.status(404).json({ message: "Book not found" });
+
     return res.status(200).json(book);
   } catch (error) {
     console.error(error.message);
-    return res.status(500).json({ message: "something went wrong, please try again later." });
+    return res.status(500).json({ message: "Something went wrong, please try again later." });
   }
 };
 
 export const updateBook = async (req, res) => {
-  const id = parseInt(req.params.id);
+  const { id } = req.params;
   const data = req.body;
 
   try {
-    await prisma.livro.update({ where: { id }, data });
-    return res.status(200).json({ message: "Updated!" });
+    await prisma.livro.update({ where: { id: Number(id) }, data });
+    return res.status(200).json({ message: "Book updated successfully" });
   } catch (error) {
     console.error(error.message);
-    return res.status(500).json({ message: "something went wrong, please try again later." });
+    return res.status(500).json({ message: "Something went wrong, please try again later." });
   }
 };
 
 export const deleteBook = async (req, res) => {
-  const id = parseInt(req.params.id);
+  const { id } = req.params;
 
   try {
-    await prisma.livro.delete({ where: { id } });
-    return res.status(200).json({ message: "Deleted!" });
+    await prisma.livro.delete({ where: { id: Number(id) } });
+    return res.status(200).json({ message: "Book deleted successfully" });
   } catch (error) {
     console.error(error.message);
-    return res.status(500).json({ message: "something went wrong, please try again later." });
+    return res.status(500).json({ message: "Something went wrong, please try again later." });
   }
 };

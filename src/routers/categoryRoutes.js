@@ -14,7 +14,7 @@ import controllerAccess from "../middlewares/controllerAccess.js";
 router.post("/create", authRequired, controllerAccess(), category.create);
 
 // Obter todos os categoriaes (Funcionario)
-router.get("/all", authRequired, controllerAccess(), category.getAll);
+router.get("/all", category.getAll);
 
 // Atualizar um categoria por ID (Funcionario)
 router.put("/update/:id", authRequired, controllerAccess(), category.update);

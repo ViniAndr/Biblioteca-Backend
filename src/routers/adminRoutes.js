@@ -1,17 +1,23 @@
 import { Router } from "express";
 const router = Router();
-//Controller
+
+// Controller
 import * as adminController from "../controllers/adminController.js";
+
 // Middlewares
 import authRequired from "../middlewares/authRequired.js";
 import controllerAccess from "../middlewares/controllerAccess.js";
 
-// login
-router.get("/login", adminController.login);
+// Login (alterado para POST)
+router.post("/login", adminController.loginAdmin);
 
-// atualizar dados
-router.put("/update", authRequired, controllerAccess("admin"), adminController.update);
+// Atualizar dados do admin
+router.put("/update", authRequired, controllerAccess("admin"), adminController.updateAdmin);
 
-// router.get("/create", adminController.create);
+// Obter perfil do admin
+router.get("/profile", authRequired, controllerAccess("admin"), adminController.getAdminDetails);
+
+// Rota comentada para criar um admin, descomente se necessário
+// router.post("/create", authRequired, controllerAccess("superadmin"), adminController.create);
 
 export default router;

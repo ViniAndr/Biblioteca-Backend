@@ -13,8 +13,8 @@ routes.post("/create", authRequired, controllerAccess(), bookController.createBo
 // Mostrar todos os livros (Todos os usuarios)
 routes.get("/all", bookController.getAllBooks);
 
-// Mostar um livro especifico (Todos os usuarios)
-routes.get("/show/:id", bookController.getShowBook);
+// Mostrar um livro específico (Todos os usuários)
+routes.get("/:id", bookController.getBookById);
 
 // Atualizar os dados de um livro (Funcionario)
 routes.put("/update/:id", authRequired, controllerAccess(), bookController.updateBook);

@@ -3,64 +3,70 @@ const prisma = new PrismaClient();
 
 import { authenticateUser, createUser } from "../services/userService.js";
 import generateToken from "../utils/generateToken.js";
-
 import hashPassword from "../utils/hashPassword.js";
 
-export const login = async (req, res) => {
+export const loginAdmin = async (req, res) => {
   const { email, senha } = req.body;
 
   try {
     const user = await authenticateUser(email, senha, "admin");
     if (!user) return res.status(404).json({ error: "User not found!" });
 
-    // por enquanto o token será chamado aqui.
     const token = generateToken(user);
 
-    return res.status(200).json({ message: "Login feito com sucesso!", token });
+    return res
+      .status(200)
+      .json({ message: "Login feito com sucesso!", token, user: { id: user.id, email: user.email } });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "something went wrong, please try again later." });
+    console.error(error.message);
+    return res.status(500).json({ error: "Something went wrong, please try again later." });
   }
 };
 
-export const update = async (req, res) => {
+export const updateAdmin = async (req, res) => {
   const id = req.userId;
   const { email, senha } = req.body;
 
   try {
-    const hash = await hashPassword(senha);
+    const updateData = { email };
+
+    if (senha) {
+      const hash = await hashPassword(senha);
+      updateData.senha = hash;
+    }
 
     const updatedAdmin = await prisma.admin.update({
       where: { id },
-      data: { email, senha: hash },
+      data: updateData,
     });
+
     if (!updatedAdmin) return res.status(404).json({ error: "Admin not found!" });
 
-    return res.status(200).json({ message: "Admin updated sucessfully!" });
+    return res.status(200).json({ message: "Admin updated successfully!" });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "something went wrong, please try again later." });
+    console.error(error.message);
+    return res.status(500).json({ error: "Something went wrong, please try again later." });
   }
 };
 
-export const getShowAdmin = async (req, res) => {
+export const getAdminDetails = async (req, res) => {
   const id = 1;
 
   try {
     const admin = await prisma.admin.findUnique({
       where: { id },
     });
+
     if (!admin) return res.status(404).json({ error: "Admin not found!" });
 
     return res.status(200).json(admin);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "something went wrong, please try again later." });
+    console.error(error.message);
+    return res.status(500).json({ error: "Something went wrong, please try again later." });
   }
 };
 
-// essa criação só pode ser feita uma vez pelo dev!!!
-
+// Criação de Admin (Somente uma vez)
 // export const create = async (req, res) => {
 //   const data = {
 //     nome: "Admin",
@@ -69,12 +75,13 @@ export const getShowAdmin = async (req, res) => {
 //   };
 
 //   try {
-//     const newAdmin = await createUser(data, "admin");
-//     if (!newAdmin) return res.status(400).json({ error: "Admin already exists!" });
+//     const existingAdmin = await prisma.admin.findFirst();
+//     if (existingAdmin) return res.status(400).json({ error: "Admin already exists!" });
 
+//     const newAdmin = await createUser(data, "admin");
 //     return res.status(201).json({ message: "Admin created successfully!" });
 //   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ error: "something went wrong, please try again later." });
+//     console.error(error.message);
+//     return res.status(500).json({ error: "Something went wrong, please try again later." });
 //   }
 // };

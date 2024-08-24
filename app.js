@@ -10,7 +10,7 @@ import author from "./src/routers/authorRoutes.js";
 import category from "./src/routers/categoryRoutes.js";
 import publisher from "./src/routers/publisherRoutes.js";
 import bookRoutes from "./src/routers/bookRoutes.js";
-import loanRoutes from "./src/routers/laonRoutes.js";
+import loanRoutes from "./src/routers/loanRoutes.js";
 
 class App {
   constructor() {
