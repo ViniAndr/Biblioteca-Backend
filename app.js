@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
+import cors from "cors";
 
 // routes
 import clientRoutes from "./src/routers/clientRoutes.js";
@@ -22,6 +23,7 @@ class App {
   middlewares() {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(cors());
   }
 
   routes() {
