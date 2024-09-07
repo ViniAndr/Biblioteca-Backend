@@ -9,6 +9,7 @@ export default async (req, res, next) => {
 
     // aqui decodificamos o token
     const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+    if (!decoded) return res.status(401).json("Invalid token");
 
     // Deixamos esses dados disponíveis para as rotas
     req.userId = decoded.id;

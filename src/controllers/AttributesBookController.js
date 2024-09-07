@@ -11,9 +11,13 @@ class AttributesBook {
   // Tiver que usar arrow function, para o this ser aplicado corretamente junto ao Express
   // criar um autor, editora ou categoria
   create = async (req, res) => {
+    const { name: nome } = req.body;
     try {
       // Chamo o model dinamicamente. req.body já é um objeto com apenas o nome para as 3 tabelas.
-      await prisma[this.tableDB].create({ data: req.body });
+      const name = await prisma[this.tableDB].findUnique({ where: { nome } });
+      if (name) return res.status(400).json({ message: "Name already exists" });
+
+      await prisma[this.tableDB].create({ data: { nome } });
       res.status(201).json({ message: "Created" });
     } catch (error) {
       console.error(error.message);
@@ -36,9 +40,13 @@ class AttributesBook {
   // Atualizar um autor, editora ou categoria por ID
   update = async (req, res) => {
     const id = parseInt(req.params.id);
+    const { name: nome } = req.body;
     try {
+      const data = await prisma[this.tableDB].findUnique({ where: { id } });
+      if (!data) return res.status(404).json({ message: "Not found" });
+
       // Chamo o model dinamicamente.
-      await prisma[this.tableDB].update({ where: { id }, data: req.body });
+      await prisma[this.tableDB].update({ where: { id }, data: { nome } });
       res.status(200).json({ message: "Updated" });
     } catch (error) {
       console.error(error.message);
@@ -50,6 +58,9 @@ class AttributesBook {
   delete = async (req, res) => {
     const id = parseInt(req.params.id);
     try {
+      const data = await prisma[this.tableDB].findUnique({ where: { id } });
+      if (!data) return res.status(404).json({ message: "Not found" });
+
       // Chamo o model dinamicamente.
       await prisma[this.tableDB].delete({ where: { id } });
       res.status(200).json({ message: "Deleted" });

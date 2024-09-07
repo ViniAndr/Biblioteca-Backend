@@ -5,12 +5,13 @@ import * as employeeController from "../controllers/employeeController.js";
 // Middlewares
 import authRequired from "../middlewares/authRequired.js";
 import controllerAccess from "../middlewares/controllerAccess.js";
+import blockAccess from "../middlewares/blockAccess.js";
 
 // Criar um novo funcionario (Admin)
 router.post("/create", authRequired, controllerAccess("admin"), employeeController.createEmployee);
 
 // Login do funcionario (Funcionario)
-router.get("/login", employeeController.loginEmployee);
+router.post("/login", blockAccess, employeeController.loginEmployee);
 
 // Atualizar dados de registro do funcionario (Funcionario)
 router.put("/update", authRequired, employeeController.updateEmployee);

@@ -19,11 +19,11 @@ export const createEmployee = async (req, res) => {
 };
 
 export const loginEmployee = async (req, res) => {
-  const { email, senha } = req.body;
+  const { email, password } = req.body;
 
   try {
-    const user = await authenticateUser(email, senha, "funcionario");
-    if (!user) return res.status(404).json({ error: "User not found!" });
+    const user = await authenticateUser(email, password, "funcionario");
+    if (!user) return res.status(404).json({ error: "invalid credentials" });
 
     const token = generateToken(user);
 
@@ -36,9 +36,10 @@ export const loginEmployee = async (req, res) => {
 
 export const updateEmployee = async (req, res) => {
   const id = req.userId;
+  const { name: nome, lastname: sobrenome, email, password: senha } = req.body;
 
   try {
-    const updatedEmployee = await prisma.funcionario.update({ where: { id }, data: req.body });
+    const updatedEmployee = await prisma.funcionario.update({ where: { id }, data: { nome, sobrenome, email, senha } });
     if (!updatedEmployee) return res.status(404).json({ error: "Employee not found!" });
 
     return res.status(200).json({ message: "Employee updated successfully!" });

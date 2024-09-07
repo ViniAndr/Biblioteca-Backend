@@ -52,7 +52,7 @@ A aplicação é projetada para gerenciar todos os aspectos da biblioteca, desde
 | Método | Rota                   | Acesso      | Login Obrigatório | Descrição                                     |
 | ------ | ---------------------- | ----------- | ----------------- | --------------------------------------------- |
 | POST   | `/employee/create`     | Admin       | Sim               | Cria um novo funcionário.                     |
-| GET    | `/employee/login`      | Público     | Não               | Realiza o login do funcionário.               |
+| POST   | `/employee/login`      | Público     | Não               | Realiza o login do funcionário.               |
 | PUT    | `/employee/update`     | Funcionário | Sim               | Atualiza os dados de registro do funcionário. |
 | GET    | `/employee/profile`    | Funcionário | Sim               | Obtém o perfil do funcionário autenticado.    |
 | GET    | `/employee/all`        | Admin       | Sim               | Obtém a lista de todos os funcionários.       |

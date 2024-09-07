@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const registerLoan = async (body, id, role) => {
-  const data = { ...body };
+  const data = { livroid: body.bookId };
   data.dataEmprestimo = new Date();
 
   // Esse "cliente" vem da coluna role

@@ -6,17 +6,15 @@ import generateToken from "../utils/generateToken.js";
 import hashPassword from "../utils/hashPassword.js";
 
 export const loginAdmin = async (req, res) => {
-  const { email, senha } = req.body;
+  const { email, password } = req.body;
 
   try {
-    const user = await authenticateUser(email, senha, "admin");
-    if (!user) return res.status(404).json({ error: "User not found!" });
+    const user = await authenticateUser(email, password, "admin");
+    if (!user) return res.status(404).json({ error: "invalid credentials" });
 
     const token = generateToken(user);
 
-    return res
-      .status(200)
-      .json({ message: "Login feito com sucesso!", token, user: { id: user.id, email: user.email } });
+    return res.status(200).json({ message: "Login feito com sucesso!", token });
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ error: "Something went wrong, please try again later." });
@@ -25,19 +23,22 @@ export const loginAdmin = async (req, res) => {
 
 export const updateAdmin = async (req, res) => {
   const id = req.userId;
-  const { email, senha } = req.body;
+  const { email, password } = req.body;
 
   try {
     const updateData = { email };
 
-    if (senha) {
-      const hash = await hashPassword(senha);
-      updateData.senha = hash;
+    if (password) {
+      const hash = await hashPassword(password);
+      updateData.password = hash;
     }
 
     const updatedAdmin = await prisma.admin.update({
       where: { id },
-      data: updateData,
+      data: {
+        email: updateData.email,
+        senha: updateData.password,
+      },
     });
 
     if (!updatedAdmin) return res.status(404).json({ error: "Admin not found!" });

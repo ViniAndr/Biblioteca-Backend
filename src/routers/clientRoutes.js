@@ -5,18 +5,19 @@ import * as clientController from "../controllers/clientController.js";
 // Middlewares
 import authRequired from "../middlewares/authRequired.js";
 import controllerAccess from "../middlewares/controllerAccess.js";
+import blockAccess from "../middlewares/blockAccess.js";
 
 // Verificar se o cliente já existe e atualizar
-router.post("/verify", clientController.verifyOrCreateClient);
+router.post("/verify", blockAccess, clientController.verifyOrCreateClient);
 
 // Criar um novo cliente online com o cadastro completo
-router.post("/create", clientController.createFullClient);
+router.post("/create", blockAccess, clientController.createFullClient);
 
 // Criar um novo cliente com o cadastro simples
 router.post("/create/simple", clientController.createSimpleClient);
 
 // Login do cliente
-router.post("/login", clientController.clientLogin);
+router.post("/login", blockAccess, clientController.clientLogin);
 
 // Atualizar endereço do cliente
 router.put("/update/address", authRequired, clientController.updateClientAddress);

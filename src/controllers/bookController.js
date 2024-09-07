@@ -2,9 +2,21 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const createBook = async (req, res) => {
-  const data = req.body;
+  const data = {
+    titulo: req.body.title,
+    isbn: req.body.isbn,
+    qtdCopias: req.body.numberOfCopies,
+    qtdDisponivel: req.body.availableQuantity,
+    edicao: req.body.edition,
+    autorId: req.body.authorId,
+    editoraId: req.body.publisherId,
+    categoriaId: req.body.categoryId,
+  };
 
   try {
+    const book = prisma.livro.findUnique({ where: { isbn: data.isbn } });
+    if (book) return res.status(400).json({ message: "Book already exists" });
+
     await prisma.livro.create({ data });
     return res.status(201).json({ message: "Book created successfully" });
   } catch (error) {
@@ -58,10 +70,25 @@ export const getBookById = async (req, res) => {
 
 export const updateBook = async (req, res) => {
   const { id } = req.params;
-  const data = req.body;
+  const data = {
+    titulo: req.body.title,
+    isbn: req.body.isbn,
+    qtdCopias: req.body.numberOfCopies,
+    qtdDisponivel: req.body.availableQuantity,
+    edicao: req.body.edition,
+    autorId: req.body.authorId,
+    editoraId: req.body.publisherId,
+    categoriaId: req.body.categoryId,
+  };
 
   try {
-    await prisma.livro.update({ where: { id: Number(id) }, data });
+    const book = await prisma.livro.findUnique({ where: { id: Number(id) } });
+    if (!book) return res.status(404).json({ message: "Book not found" });
+
+    await prisma.livro.update({
+      where: { id: Number(id) },
+      data,
+    });
     return res.status(200).json({ message: "Book updated successfully" });
   } catch (error) {
     console.error(error.message);

@@ -33,7 +33,7 @@ export const confirmLoanPickup = async (req, res) => {
     }
 
     // Atualiza o empréstimo com o ID do funcionário e altera o status para "Emprestado"
-    const updatedLoan = await prisma.emprestimo.update({
+    await prisma.emprestimo.update({
       where: { id: loanId },
       data: {
         funcionarioId: userId,
@@ -48,7 +48,7 @@ export const confirmLoanPickup = async (req, res) => {
   }
 };
 
-// os filtro de status e id são opcionais e vem do body
+// os filtro de status é id são opcionais e vem do body
 export const getLoans = async (req, res) => {
   const { status, clientId } = req.query;
 
@@ -61,7 +61,7 @@ export const getLoans = async (req, res) => {
   }
 };
 
-// o filtro de status e opcionais e vem do body
+// o filtro de status é opcionais e vem do body
 export const getClientLoans = async (req, res) => {
   const clientId = req.userId;
   const { status } = req.query;

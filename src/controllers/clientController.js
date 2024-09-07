@@ -2,14 +2,23 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 import generateToken from "../utils/generateToken.js";
-import { authenticateUser, createUser, verifyAndUpdateClient } from "../services/userService.js";
+import { authenticateUser, createUser, updateRegistrationData, verifyClientByPhone } from "../services/userService.js";
 import hashPassword from "../utils/hashPassword.js";
 
 // verificacao de usuario ja cadastrado na biblioteca
 export const verifyOrCreateClient = async (req, res) => {
+  const { phone, email, password } = req.body;
+
   try {
-    const client = await verifyAndUpdateClient(req.body);
-    if (!client) return res.status(404).json({ error: "Client not found!" });
+    const clientExists = await verifyClientByPhone(phone);
+    if (clientExists.error) {
+      return res.status(clientExists.status).json({ error: clientExists.error });
+    }
+
+    const updatedClient = await updateRegistrationData(email, password, phone);
+    if (!updatedClient) {
+      return res.status(400).json({ error: "No valid data provided for update." });
+    }
 
     return res.status(200).json({ message: "Client updated successfully!" });
   } catch (error) {
@@ -35,13 +44,23 @@ export const createFullClient = async (req, res) => {
 
 // criacao simples feita pelo funcionario via presencial
 export const createSimpleClient = async (req, res) => {
-  const { telefone } = req.body;
+  const data = {
+    nome: req.body.name,
+    sobrenome: req.body.lastname,
+    telefone: req.body.phone,
+    logradouro: req.body.street,
+    numero: req.body.number,
+    bairro: req.body.neighborhood,
+    cidade: req.body.city,
+    estado: req.body.state,
+    cep: req.body.cep,
+  };
 
   try {
     const existingClient = await prisma.cliente.findUnique({ where: { telefone } });
     if (existingClient) return res.status(400).json({ error: "Client already exists!" });
 
-    await prisma.cliente.create({ data: req.body });
+    await prisma.cliente.create({ data });
 
     return res.status(201).json({ message: "Client created successfully!" });
   } catch (error) {
@@ -52,11 +71,11 @@ export const createSimpleClient = async (req, res) => {
 
 // Função de login para clientes
 export const clientLogin = async (req, res) => {
-  const { email, senha } = req.body;
+  const { email, password } = req.body;
 
   try {
-    const client = await authenticateUser(email, senha, "cliente");
-    if (!client) return res.status(404).json({ error: "Client not found!" });
+    const client = await authenticateUser(email, password, "cliente");
+    if (!client) return res.status(404).json({ error: "invalid credentials" });
 
     const token = generateToken(client);
 
@@ -70,7 +89,7 @@ export const clientLogin = async (req, res) => {
 // Atualização dos dados cadastrais do cliente
 export const updateClientProfile = async (req, res) => {
   const clientId = req.userId;
-  const { nome, sobrenome, telefone, email, senha } = req.body;
+  const { name: nome, lastname: sobrenome, phone: telefone, email, password: senha } = req.body;
 
   try {
     const hashedPassword = await hashPassword(senha);
@@ -91,7 +110,7 @@ export const updateClientProfile = async (req, res) => {
 // Atualização do endereço do cliente
 export const updateClientAddress = async (req, res) => {
   const clientId = req.userId;
-  const { logradouro, numero, bairro, cidade, estado, cep } = req.body;
+  const { street: logradouro, number: numero, neighborhood: bairro, city: cidade, state: estado, cep } = req.body;
 
   try {
     const updatedAddress = await prisma.cliente.update({
