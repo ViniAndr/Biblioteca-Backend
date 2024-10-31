@@ -41,8 +41,8 @@ A aplicação é projetada para gerenciar todos os aspectos da biblioteca, desde
 | POST   | `/client/create`         | Público     | Não               | Cria um novo cliente com cadastro completo (no site).                                                                                |
 | POST   | `/client/create/simple`  | Público     | Não               | Cria um novo cliente com cadastro simples (o cadastro na biblioteca física).                                                         |
 | POST   | `/client/login`          | Público     | Não               | Realiza o login do cliente.                                                                                                          |
-| PUT    | `/client/update/address` | Cliente     | Sim               | Atualiza o endereço do cliente.                                                                                                      |
-| PUT    | `/client/update/profile` | Cliente     | Sim               | Atualiza os dados do perfil do cliente.                                                                                              |
+| PUT    | `/client/address/update` | Cliente     | Sim               | Atualiza o endereço do cliente.                                                                                                      |
+| PUT    | `/client/profile/update` | Cliente     | Sim               | Atualiza os dados do perfil do cliente.                                                                                              |
 | DELETE | `/client/delete`         | Cliente     | Sim               | Deleta a conta do cliente.                                                                                                           |
 | GET    | `/client/all`            | Funcionário | Sim               | Lista todos os clientes.                                                                                                             |
 | GET    | `/client/:id`            | Funcionário | Sim               | Obtém os dados de um cliente por ID.                                                                                                 |
@@ -52,7 +52,7 @@ A aplicação é projetada para gerenciar todos os aspectos da biblioteca, desde
 | Método | Rota                   | Acesso      | Login Obrigatório | Descrição                                     |
 | ------ | ---------------------- | ----------- | ----------------- | --------------------------------------------- |
 | POST   | `/employee/create`     | Admin       | Sim               | Cria um novo funcionário.                     |
-| POST   | `/employee/login`      | Público     | Não               | Realiza o login do funcionário.               |
+| POST   | `/employee/login`      | Público     | Não               | Realiza o login do funcionário e Admin.       |
 | PUT    | `/employee/update`     | Funcionário | Sim               | Atualiza os dados de registro do funcionário. |
 | GET    | `/employee/profile`    | Funcionário | Sim               | Obtém o perfil do funcionário autenticado.    |
 | GET    | `/employee/all`        | Admin       | Sim               | Obtém a lista de todos os funcionários.       |
@@ -61,13 +61,13 @@ A aplicação é projetada para gerenciar todos os aspectos da biblioteca, desde
 
 ### Admin
 
-| Método | Rota             | Acesso  | Login Obrigatório | Descrição                               |
-| ------ | ---------------- | ------- | ----------------- | --------------------------------------- |
-| POST   | `/admin/login`   | Público | Não               | Realiza o login do admin.               |
-| PUT    | `/admin/update`  | Admin   | Sim               | Atualiza os dados do admin autenticado. |
-| GET    | `/admin/profile` | Admin   | Sim               | Retorna o perfil do admin autenticado.  |
+| Método | Rota             | Acesso | Login Obrigatório | Descrição                               |
+| ------ | ---------------- | ------ | ----------------- | --------------------------------------- |
+| PUT    | `/admin/update`  | Admin  | Sim               | Atualiza os dados do admin autenticado. |
+| GET    | `/admin/profile` | Admin  | Sim               | Retorna o perfil do admin autenticado.  |
 
 - **Nota**: Existe uma rota comentada para a criação de um Admin com email e senha padrão, que deve ser feita pelo desenvolvedor. Recomenda-se que o Admin altere login e senha no primeiro acesso.
+- **Login**: O administrador faz o login pela rota de funcionário.
 
 ### Livro
 

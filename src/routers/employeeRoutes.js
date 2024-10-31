@@ -11,7 +11,7 @@ import blockAccess from "../middlewares/blockAccess.js";
 router.post("/create", authRequired, controllerAccess("admin"), employeeController.createEmployee);
 
 // Login do funcionario (Funcionario)
-router.post("/login", blockAccess, employeeController.loginEmployee);
+router.post("/login", blockAccess, employeeController.employeeAndAdminLogin);
 
 // Atualizar dados de registro do funcionario (Funcionario)
 router.put("/update", authRequired, employeeController.updateEmployee);

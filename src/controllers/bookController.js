@@ -26,17 +26,30 @@ export const createBook = async (req, res) => {
 };
 
 export const getAllBooks = async (req, res) => {
-  const limit = 10;
-  const { page = 1, author, category, publisher } = req.query;
+  const limit = 5;
+  const { page, author, category, publisher, title } = req.query;
 
   const where = {};
   if (author) where.autorId = Number(author);
   if (category) where.categoriaId = Number(category);
   if (publisher) where.editoraId = Number(publisher);
 
+  // Filtro de busca por título
+  if (title) {
+    where.titulo = {
+      contains: title, // Busca livros cujo nome contém o termo
+      mode: "insensitive", // Ignora maiúsculas/minúsculas na busca
+    };
+  }
+
   try {
     const books = await prisma.livro.findMany({
       where,
+      include: {
+        autor: true,
+        editora: true,
+        categoria: true,
+      },
       take: Number(limit),
       skip: (Number(page) - 1) * Number(limit),
     });

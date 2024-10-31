@@ -28,7 +28,7 @@ export const confirmLoanPickup = async (req, res) => {
       return res.status(404).json({ error: "Loan not found" });
     }
 
-    if (loan.status !== "Pendente") {
+    if (loan.status !== "Solicitado") {
       return res.status(400).json({ error: "Loan is not pending" });
     }
 
@@ -48,12 +48,54 @@ export const confirmLoanPickup = async (req, res) => {
   }
 };
 
+// pegar os nomes de cliente para adicionar no filtro
+export const getClientsFromLoans = async (req, res) => {
+  try {
+    const clients = await prisma.emprestimo.findMany({
+      distinct: ["clienteId"],
+      select: {
+        cliente: {
+          select: {
+            id: true,
+            nome: true,
+          },
+        },
+      },
+    });
+    return res.status(200).json(clients);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Something went wrong, please try again later." });
+  }
+};
+
+// pegar os nomes de livros para adicionar no filtro
+export const getBooksFromLoans = async (req, res) => {
+  try {
+    const clients = await prisma.emprestimo.findMany({
+      distinct: ["livroId"],
+      select: {
+        livro: {
+          select: {
+            id: true,
+            titulo: true,
+          },
+        },
+      },
+    });
+    return res.status(200).json(clients);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Something went wrong, please try again later." });
+  }
+};
+
 // os filtro de status é id são opcionais e vem do body
 export const getLoans = async (req, res) => {
-  const { status, clientId } = req.query;
+  const { page, client, status, title } = req.query;
 
   try {
-    const loans = await getLoansEmployee(status, clientId);
+    const loans = await getLoansEmployee(page, client, status, title);
     return res.status(200).json(loans);
   } catch (error) {
     console.error(error);
@@ -84,7 +126,7 @@ export const cancelLoan = async (req, res) => {
     if (!loan) {
       return res.status(404).json({ error: "Loan not found" });
     }
-    if (loan.status !== "Pendente") {
+    if (loan.status !== "Solicitado") {
       return res.status(400).json({ error: "Loan is not pending" });
     }
 

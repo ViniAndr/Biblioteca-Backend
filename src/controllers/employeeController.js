@@ -9,23 +9,27 @@ export const createEmployee = async (req, res) => {
     const user = await createUser(req.body, "funcionario");
     if (!user) return res.status(400).json({ error: "User already exists!" });
 
-    const token = generateToken(user);
-
-    return res.status(201).json({ message: "Employee created successfully!", token });
+    return res.status(201).json({ message: "Employee created successfully!" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Something went wrong. Please try again later." });
   }
 };
 
-export const loginEmployee = async (req, res) => {
+export const employeeAndAdminLogin = async (req, res) => {
   const { email, password } = req.body;
+  let adminUser = null;
 
   try {
-    const user = await authenticateUser(email, password, "funcionario");
-    if (!user) return res.status(404).json({ error: "invalid credentials" });
+    // verifica se esse email e senha pertencem a um funcionario
+    const employeeUser = await authenticateUser(email, password, "funcionario");
+    // se nao for um funcionario, verifica se e um admin
+    if (!employeeUser) {
+      adminUser = await authenticateUser(email, password, "admin");
+      if (!adminUser) return res.status(404).json({ error: "Invalid credentials!" });
+    }
 
-    const token = generateToken(user);
+    const token = generateToken(employeeUser || adminUser);
 
     return res.status(200).json({ message: "Login successful!", token });
   } catch (error) {
@@ -36,7 +40,7 @@ export const loginEmployee = async (req, res) => {
 
 export const updateEmployee = async (req, res) => {
   const id = req.userId;
-  const { name: nome, lastname: sobrenome, email, password: senha } = req.body;
+  const { name: nome, lastName: sobrenome, email, password: senha } = req.body;
 
   try {
     const updatedEmployee = await prisma.funcionario.update({ where: { id }, data: { nome, sobrenome, email, senha } });

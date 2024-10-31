@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 const createUser = async (data, role) => {
   const dataPT = {
     nome: data.name,
-    sobrenome: data.lastname,
+    sobrenome: data.lastName,
     email: data.email,
     senha: data.password,
     telefone: data.phone,

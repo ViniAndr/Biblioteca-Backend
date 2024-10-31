@@ -27,10 +27,37 @@ class AttributesBook {
 
   // Obter todos os autores, editoras ou categorias
   getAll = async (req, res) => {
+    const limit = 5;
+    const { page, nome } = req.query;
+    const where = {};
+
+    // Filtro de busca por título
+    if (nome) {
+      where.nome = {
+        contains: nome, // Busca livros cujo nome contém o termo
+        mode: "insensitive", // Ignora maiúsculas/minúsculas na busca
+      };
+    }
+
     try {
       // Chamo o model dinamicamente.
+      if (page) {
+        const data = await prisma[this.tableDB].findMany({
+          where,
+          take: Number(limit),
+          skip: (Number(page) - 1) * Number(limit),
+        });
+
+        const count = await prisma[this.tableDB].count({ where });
+        return res.status(200).json({
+          data,
+          totalPages: Math.ceil(count / limit),
+          currentPage: Number(page),
+        });
+      }
+
       const data = await prisma[this.tableDB].findMany();
-      res.status(200).json(data);
+      return res.status(200).json(data);
     } catch (error) {
       console.error(error.message);
       res.status(500).json({ message: "Something went wrong, please try again later." });

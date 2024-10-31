@@ -32,6 +32,7 @@ export const createFullClient = async (req, res) => {
   try {
     const client = await createUser(req.body, "cliente");
     if (!client) return res.status(400).json({ error: "Client already exists!" });
+    console.log(client)
 
     const token = generateToken(client);
 
@@ -46,7 +47,7 @@ export const createFullClient = async (req, res) => {
 export const createSimpleClient = async (req, res) => {
   const data = {
     nome: req.body.name,
-    sobrenome: req.body.lastname,
+    sobrenome: req.body.lastName,
     telefone: req.body.phone,
     logradouro: req.body.street,
     numero: req.body.number,
@@ -86,17 +87,37 @@ export const clientLogin = async (req, res) => {
   }
 };
 
+export const getClientProfile = async (req, res) => {
+  const userId = req.userId;
+  try {
+    const client = await prisma.cliente.findUnique({ where: { id: userId } });
+    if (!client) return res.status(404).json({ error: "Client not found!" });
+    return res.status(200).json(client);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "An error occurred, please try again later." });
+  }
+};
+
 // Atualização dos dados cadastrais do cliente
 export const updateClientProfile = async (req, res) => {
   const clientId = req.userId;
-  const { name: nome, lastname: sobrenome, phone: telefone, email, password: senha } = req.body;
+  const data = {};
+
+  if (req.body.name) data.nome = req.body.name;
+  if (req.body.lastName) data.sobrenome = req.body.lastName;
+  if (req.body.phone) data.telefone = req.body.phone;
+  if (req.body.email) data.email = req.body.email;
+
+  if (req.body.password) {
+    const hashedPassword = await hashPassword(req.body.password);
+    data.senha = hashedPassword;
+  }
 
   try {
-    const hashedPassword = await hashPassword(senha);
-
     const updatedClient = await prisma.cliente.update({
       where: { id: clientId },
-      data: { nome, sobrenome, telefone, email, senha: hashedPassword },
+      data,
     });
     if (!updatedClient) return res.status(404).json({ error: "Client not found!" });
 
@@ -110,12 +131,22 @@ export const updateClientProfile = async (req, res) => {
 // Atualização do endereço do cliente
 export const updateClientAddress = async (req, res) => {
   const clientId = req.userId;
-  const { street: logradouro, number: numero, neighborhood: bairro, city: cidade, state: estado, cep } = req.body;
+  const data = {};
+  console.log(req.body);
+
+  if (req.body.street) data.logradouro = req.body.street;
+  if (req.body.number) data.numero = req.body.number;
+  if (req.body.neighborhood) data.bairro = req.body.neighborhood;
+  if (req.body.city) data.cidade = req.body.city;
+  if (req.body.state) data.estado = req.body.state;
+  if (req.body.cep) data.cep = req.body.cep;
+  console.log("----------------------");
+  console.log(data);
 
   try {
     const updatedAddress = await prisma.cliente.update({
       where: { id: clientId },
-      data: { logradouro, numero, bairro, cidade, estado, cep },
+      data,
     });
     if (!updatedAddress) return res.status(404).json({ error: "Client not found!" });
 
@@ -143,10 +174,31 @@ export const deleteClientAccount = async (req, res) => {
 
 // Retorna todos os clientes cadastrados
 export const listAllClients = async (req, res) => {
-  try {
-    const clients = await prisma.cliente.findMany();
+  const limit = 5;
+  const { page, nome } = req.query;
+  const where = {};
 
-    return res.status(200).json({ clients });
+  // Filtro de busca por título
+  if (nome) {
+    where.nome = {
+      contains: nome, // Busca livros cujo nome contém o termo
+      mode: "insensitive", // Ignora maiúsculas/minúsculas na busca
+    };
+  }
+
+  try {
+    const data = await prisma.cliente.findMany({
+      where,
+      take: Number(limit),
+      skip: (Number(page) - 1) * Number(limit),
+    });
+
+    const count = await prisma.cliente.count({ where });
+    return res.status(200).json({
+      data,
+      totalPages: Math.ceil(count / limit),
+      currentPage: Number(page),
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "An error occurred, please try again later." });

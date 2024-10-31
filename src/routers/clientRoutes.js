@@ -19,17 +19,20 @@ router.post("/create/simple", clientController.createSimpleClient);
 // Login do cliente
 router.post("/login", blockAccess, clientController.clientLogin);
 
+// Ver perfil do cliente
+router.get("/profile", authRequired, clientController.getClientProfile);
+
 // Atualizar endereço do cliente
-router.put("/update/address", authRequired, clientController.updateClientAddress);
+router.put("/address/update", authRequired, clientController.updateClientAddress);
 
 // Atualizar dados do registro do cliente
-router.put("/update/profile", authRequired, clientController.updateClientProfile);
+router.put("/profile/update", authRequired, clientController.updateClientProfile);
 
 // Deletar cliente
 router.delete("/delete", authRequired, clientController.deleteClientAccount);
 
 // Ver todos os clientes
-router.get("/all", authRequired, controllerAccess("admin"), clientController.listAllClients);
+router.get("/all", authRequired, controllerAccess(), clientController.listAllClients);
 
 // Ver cliente por ID
 router.get("/:id", authRequired, controllerAccess("admin"), clientController.getClientById);

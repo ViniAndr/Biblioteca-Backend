@@ -31,25 +31,44 @@ const getLoansClient = async (clientId, status) => {
     where.status = status;
   }
   // se nao tiver id e status, ele vai trazer todos os emprestimos do cliente
-  const loans = await prisma.emprestimo.findMany({ where });
+  const loans = await prisma.emprestimo.findMany({ where, include: { livro: true } });
   return loans;
 };
 
-const getLoansEmployee = async (clientId, status) => {
-  // vai buscar todos os emprestimos
+const getLoansEmployee = async (page, client, status, title) => {
+  const limit = 20;
   const where = {};
-  // pode ter o filtro de id e status
-  if (clientId) {
-    where.clienteId = clientId;
-  }
-  if (status) {
-    where.status = status;
+
+  // Pode ter o filtro de cliente e status
+  if (client) where.clienteId = Number(client);
+  if (status) where.status = status;
+
+  // Filtro para o nome do livro
+  if (title) {
+    where.livro = {
+      titulo: {
+        contains: title, // Busca parcial pelo nome do livro
+        mode: "insensitive", // Ignora maiúsculas e minúsculas
+      },
+    };
   }
 
-  // se nao tiver id e status, ele vai trazer todos os emprestimos
-  const loans = await prisma.emprestimo.findMany({ where });
+  const loans = await prisma.emprestimo.findMany({
+    where,
+    include: { livro: true, cliente: true }, // Inclui os relacionamentos com Livro e Cliente
+    take: Number(limit),
+    skip: (Number(page) - 1) * Number(limit),
+  });
 
-  return loans;
+  const count = await prisma.emprestimo.count({
+    where,
+  });
+
+  return {
+    loans,
+    totalPages: Math.ceil(count / limit),
+    currentPage: Number(page),
+  };
 };
 
 export { registerLoan, getLoansClient, getLoansEmployee };
