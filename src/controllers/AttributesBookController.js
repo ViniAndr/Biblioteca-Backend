@@ -27,10 +27,10 @@ class AttributesBook {
 
   // Obter todos os autores, editoras ou categorias
   getAll = async (req, res) => {
-    const limit = 5;
-    const { page, nome } = req.query;
-    const where = {};
+    const { page, nome, itemsPerPage } = req.query;
+    const itemsPerPageNumber = itemsPerPage ? Number(itemsPerPage) : 10;
 
+    const where = {};
     // Filtro de busca por título
     if (nome) {
       where.nome = {
@@ -44,14 +44,14 @@ class AttributesBook {
       if (page) {
         const data = await prisma[this.tableDB].findMany({
           where,
-          take: Number(limit),
-          skip: (Number(page) - 1) * Number(limit),
+          take: Number(itemsPerPageNumber),
+          skip: (Number(page) - 1) * Number(itemsPerPageNumber),
         });
 
         const count = await prisma[this.tableDB].count({ where });
         return res.status(200).json({
           data,
-          totalPages: Math.ceil(count / limit),
+          totalPages: Math.ceil(count / itemsPerPageNumber),
           currentPage: Number(page),
         });
       }

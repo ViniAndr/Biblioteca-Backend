@@ -14,11 +14,10 @@ router.post("/create", authRequired, loanController.createLoan);
 router.put("/:id/confirm", authRequired, controllerAccess(), loanController.confirmLoanPickup);
 
 // Ver todos os empréstimos ou filtrar por cliente/status (funcionário)
-router.get("/all", loanController.getLoans);
-// router.get("/all", authRequired, controllerAccess(), loanController.getLoans);
+router.get("/all", authRequired, controllerAccess(), loanController.getAllLoans);
 
 // Ver todos os empréstimos do cliente autenticado ou filtrar por status (cliente)
-router.get("/client", authRequired, loanController.getClientLoans);
+router.get("/client", authRequired, loanController.getAllLoanByClient);
 
 // Cancelar empréstimo (cliente)
 router.put("/:id/cancel", authRequired, loanController.cancelLoan);

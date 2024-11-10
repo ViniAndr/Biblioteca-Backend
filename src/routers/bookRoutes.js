@@ -27,6 +27,6 @@ export default routes;
 /*
 Formas de usar o endpoint /all
 
-GET /book/all?page=1&limit=30
-GET /book/all?author=2&category=2&publisher=3&page=2&limit=5
+GET /book/all?page=1&itemsPerPage=30
+GET /book/all?author=2&category=2&publisher=3&page=2&itemsPerPage=5
 */

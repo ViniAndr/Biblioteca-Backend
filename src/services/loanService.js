@@ -23,7 +23,7 @@ const registerLoan = async (body, id, role) => {
   return loan;
 };
 
-const getLoansClient = async (clientId, status) => {
+const getAllLoanPerClient = async (clientId, status) => {
   // a busca por padrao vai ser associada ao id do cliente
   const where = { clienteId: clientId };
   // pode ter o filtro de status
@@ -35,8 +35,8 @@ const getLoansClient = async (clientId, status) => {
   return loans;
 };
 
-const getLoansEmployee = async (page, client, status, title) => {
-  const limit = 20;
+const getAllLoanWithLoanEmployee = async (page, client, status, title, itemsPerPage) => {
+  const itemsPerPageNumber = itemsPerPage ? Number(itemsPerPage) : 10;
   const where = {};
 
   // Pode ter o filtro de cliente e status
@@ -56,8 +56,8 @@ const getLoansEmployee = async (page, client, status, title) => {
   const loans = await prisma.emprestimo.findMany({
     where,
     include: { livro: true, cliente: true }, // Inclui os relacionamentos com Livro e Cliente
-    take: Number(limit),
-    skip: (Number(page) - 1) * Number(limit),
+    take: Number(itemsPerPageNumber),
+    skip: (Number(page) - 1) * Number(itemsPerPageNumber),
   });
 
   const count = await prisma.emprestimo.count({
@@ -66,12 +66,12 @@ const getLoansEmployee = async (page, client, status, title) => {
 
   return {
     loans,
-    totalPages: Math.ceil(count / limit),
+    totalPages: Math.ceil(count / itemsPerPageNumber),
     currentPage: Number(page),
   };
 };
 
-export { registerLoan, getLoansClient, getLoansEmployee };
+export { registerLoan, getAllLoanPerClient, getAllLoanWithLoanEmployee };
 
 function getDateReturn() {
   const dateNow = new Date();

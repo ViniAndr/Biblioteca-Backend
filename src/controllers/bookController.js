@@ -2,23 +2,32 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const createBook = async (req, res) => {
+  const { title, isbn, numberOfCopies, availableQuantity, edition, authorId, publisherId, categoryId } = req.body;
   const data = {
-    titulo: req.body.title,
-    isbn: req.body.isbn,
-    qtdCopias: req.body.numberOfCopies,
-    qtdDisponivel: req.body.availableQuantity,
-    edicao: req.body.edition,
-    autorId: req.body.authorId,
-    editoraId: req.body.publisherId,
-    categoriaId: req.body.categoryId,
+    titulo: title,
+    isbn: isbn,
+    qtdCopias: Number(numberOfCopies),
+    qtdDisponivel: Number(availableQuantity),
+    edicao: Number(edition),
+    autorId: Number(authorId),
+    editoraId: Number(publisherId),
+    categoriaId: Number(categoryId),
   };
 
   try {
-    const book = prisma.livro.findUnique({ where: { isbn: data.isbn } });
+    const book = await prisma.livro.findUnique({ where: { isbn } });
     if (book) return res.status(400).json({ message: "Book already exists" });
 
-    await prisma.livro.create({ data });
-    return res.status(201).json({ message: "Book created successfully" });
+    // Alem de Criar ele retorna o livro criado para pode ser atualizado no front.
+    const newBook = await prisma.livro.create({
+      data,
+      include: {
+        autor: true,
+        editora: true,
+        categoria: true,
+      },
+    });
+    return res.status(201).json({ message: "Book created successfully", book: newBook });
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ message: "Something went wrong, please try again later." });
@@ -26,8 +35,8 @@ export const createBook = async (req, res) => {
 };
 
 export const getAllBooks = async (req, res) => {
-  const limit = 5;
-  const { page, author, category, publisher, title } = req.query;
+  const { page, author, category, publisher, title, itemsPerPage } = req.query;
+  const itemsPerPageNumber = itemsPerPage ? Number(itemsPerPage) : 10;
 
   const where = {};
   if (author) where.autorId = Number(author);
@@ -50,15 +59,15 @@ export const getAllBooks = async (req, res) => {
         editora: true,
         categoria: true,
       },
-      take: Number(limit),
-      skip: (Number(page) - 1) * Number(limit),
+      take: Number(itemsPerPageNumber),
+      skip: (Number(page) - 1) * Number(itemsPerPageNumber),
     });
 
     const count = await prisma.livro.count({ where });
 
     return res.status(200).json({
       books,
-      totalPages: Math.ceil(count / limit),
+      totalPages: Math.ceil(count / itemsPerPageNumber),
       currentPage: Number(page),
     });
   } catch (error) {
@@ -82,16 +91,17 @@ export const getBookById = async (req, res) => {
 };
 
 export const updateBook = async (req, res) => {
+  const { title, isbn, numberOfCopies, availableQuantity, edition, authorId, publisherId, categoryId } = req.body;
   const { id } = req.params;
   const data = {
-    titulo: req.body.title,
-    isbn: req.body.isbn,
-    qtdCopias: req.body.numberOfCopies,
-    qtdDisponivel: req.body.availableQuantity,
-    edicao: req.body.edition,
-    autorId: req.body.authorId,
-    editoraId: req.body.publisherId,
-    categoriaId: req.body.categoryId,
+    titulo: title,
+    isbn: isbn,
+    qtdCopias: numberOfCopies,
+    qtdDisponivel: availableQuantity,
+    edicao: edition,
+    autorId: authorId,
+    editoraId: publisherId,
+    categoriaId: categoryId,
   };
 
   try {

@@ -32,7 +32,6 @@ export const createFullClient = async (req, res) => {
   try {
     const client = await createUser(req.body, "cliente");
     if (!client) return res.status(400).json({ error: "Client already exists!" });
-    console.log(client)
 
     const token = generateToken(client);
 
@@ -45,25 +44,27 @@ export const createFullClient = async (req, res) => {
 
 // criacao simples feita pelo funcionario via presencial
 export const createSimpleClient = async (req, res) => {
+  const { name, lastName, phone, street, number, neighborhood, city, state, cep } = req.body;
+
   const data = {
-    nome: req.body.name,
-    sobrenome: req.body.lastName,
-    telefone: req.body.phone,
-    logradouro: req.body.street,
-    numero: req.body.number,
-    bairro: req.body.neighborhood,
-    cidade: req.body.city,
-    estado: req.body.state,
-    cep: req.body.cep,
+    nome: name,
+    sobrenome: lastName,
+    telefone: phone,
+    logradouro: street,
+    numero: number,
+    bairro: neighborhood,
+    cidade: city,
+    estado: state,
+    cep,
   };
 
   try {
-    const existingClient = await prisma.cliente.findUnique({ where: { telefone } });
+    const existingClient = await prisma.cliente.findUnique({ where: { telefone: phone } });
     if (existingClient) return res.status(400).json({ error: "Client already exists!" });
 
-    await prisma.cliente.create({ data });
+    const newClient = await prisma.cliente.create({ data });
 
-    return res.status(201).json({ message: "Client created successfully!" });
+    return res.status(201).json({ message: "Client created successfully!", client: newClient });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "An error occurred, please try again later." });
@@ -130,18 +131,16 @@ export const updateClientProfile = async (req, res) => {
 
 // Atualização do endereço do cliente
 export const updateClientAddress = async (req, res) => {
+  const { street, number, neighborhood, city, state, cep } = req.body;
   const clientId = req.userId;
   const data = {};
-  console.log(req.body);
 
-  if (req.body.street) data.logradouro = req.body.street;
-  if (req.body.number) data.numero = req.body.number;
-  if (req.body.neighborhood) data.bairro = req.body.neighborhood;
-  if (req.body.city) data.cidade = req.body.city;
-  if (req.body.state) data.estado = req.body.state;
-  if (req.body.cep) data.cep = req.body.cep;
-  console.log("----------------------");
-  console.log(data);
+  if (street) data.logradouro = street;
+  if (number) data.numero = number;
+  if (neighborhood) data.bairro = neighborhood;
+  if (city) data.cidade = city;
+  if (state) data.estado = state;
+  if (cep) data.cep = cep;
 
   try {
     const updatedAddress = await prisma.cliente.update({
@@ -174,8 +173,9 @@ export const deleteClientAccount = async (req, res) => {
 
 // Retorna todos os clientes cadastrados
 export const listAllClients = async (req, res) => {
-  const limit = 5;
-  const { page, nome } = req.query;
+  const { page, nome, itemsPerPage } = req.query;
+  const itemsPerPageNumber = itemsPerPage ? Number(itemsPerPage) : 10;
+
   const where = {};
 
   // Filtro de busca por título
@@ -189,14 +189,14 @@ export const listAllClients = async (req, res) => {
   try {
     const data = await prisma.cliente.findMany({
       where,
-      take: Number(limit),
-      skip: (Number(page) - 1) * Number(limit),
+      take: Number(itemsPerPageNumber),
+      skip: (Number(page) - 1) * Number(itemsPerPageNumber),
     });
 
     const count = await prisma.cliente.count({ where });
     return res.status(200).json({
       data,
-      totalPages: Math.ceil(count / limit),
+      totalPages: Math.ceil(count / itemsPerPageNumber),
       currentPage: Number(page),
     });
   } catch (error) {

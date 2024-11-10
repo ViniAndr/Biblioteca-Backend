@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 //Service
-import { registerLoan, getLoansClient, getLoansEmployee } from "../services/loanService.js";
+import { registerLoan, getAllLoanPerClient, getAllLoanWithLoanEmployee } from "../services/loanService.js";
 
 export const createLoan = async (req, res) => {
   const userId = req.useruserId;
@@ -91,11 +91,11 @@ export const getBooksFromLoans = async (req, res) => {
 };
 
 // os filtro de status é id são opcionais e vem do body
-export const getLoans = async (req, res) => {
-  const { page, client, status, title } = req.query;
+export const getAllLoans = async (req, res) => {
+  const { page, client, status, title, itemsPerPage } = req.query;
 
   try {
-    const loans = await getLoansEmployee(page, client, status, title);
+    const loans = await getAllLoanWithLoanEmployee(page, client, status, title, itemsPerPage);
     return res.status(200).json(loans);
   } catch (error) {
     console.error(error);
@@ -104,12 +104,12 @@ export const getLoans = async (req, res) => {
 };
 
 // o filtro de status é opcionais e vem do body
-export const getClientLoans = async (req, res) => {
+export const getAllLoanByClient = async (req, res) => {
   const clientId = req.userId;
   const { status } = req.query;
 
   try {
-    const loans = await getLoansClient(clientId, status);
+    const loans = await getAllLoanPerClient(clientId, status);
     return res.status(200).json(loans);
   } catch (error) {
     console.error(error);
